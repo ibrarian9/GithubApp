@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Github App</string>
+    <string name="judul">Github User\'s Search</string>
+    <string name="cari">Cari…</string>
+    <string name="detail_user">Detail User</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="followers">Followers</string>
+    <string name="following">Followings</string>
+</resources>
