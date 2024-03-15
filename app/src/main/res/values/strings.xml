@@ -4,9 +4,9 @@
     <string name="cari">Cari…</string>
     <string name="detail_user">Detail User</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="followers">Followers</string>
-    <string name="following">Followings</string>
     <string name="button_favorite">Button Favorite</string>
     <string name="github_favorite">Github Favorite</string>
     <string name="button_dark_mode">Button Dark Mode</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="username">Username</string>
 </resources>

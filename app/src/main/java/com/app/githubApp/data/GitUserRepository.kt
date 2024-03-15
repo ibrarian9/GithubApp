@@ -3,6 +3,7 @@ package com.app.githubApp.data
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import com.app.githubApp.remote.database.GitUser
 import com.app.githubApp.remote.database.GitUserDao
 import com.app.githubApp.remote.response.FollResponseItem
@@ -18,13 +19,20 @@ import java.util.concurrent.Executors
 
 class GitUserRepository private constructor(
     private val apiService: ApiService,
-    private val gitUserDao: GitUserDao
+    private val gitUserDao: GitUserDao,
+    private val pref: SettingPreference
 ) {
-
     private val executorService: ExecutorService = Executors.newSingleThreadExecutor()
-
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+
+    fun getThemeSetting(): LiveData<Boolean> {
+        return pref.getThemeSet().asLiveData()
+    }
+
+    suspend fun saveThemeSet(isDarkModeActive: Boolean){
+        pref.saveThemeSet(isDarkModeActive)
+    }
 
     fun getAllFavorite(): LiveData<List<GitUser>> = gitUserDao.getAllFavorite()
 
@@ -145,10 +153,11 @@ class GitUserRepository private constructor(
         var INSTANCE: GitUserRepository? = null
         fun getInstance(
             apiService: ApiService,
-            gitUserDao: GitUserDao
+            gitUserDao: GitUserDao,
+            pref: SettingPreference
         ): GitUserRepository =
             INSTANCE ?: synchronized(this) {
-                INSTANCE ?: GitUserRepository(apiService, gitUserDao)
+                INSTANCE ?: GitUserRepository(apiService, gitUserDao, pref)
             }.also { INSTANCE = it }
     }
 }

@@ -36,6 +36,6 @@ interface ApiService {
     ): Call<List<FollResponseItem>>
 
     companion object {
-        const val TOKEN = "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"
+        const val TOKEN = "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"
     }
 }

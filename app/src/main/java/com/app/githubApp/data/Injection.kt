@@ -7,8 +7,9 @@ import com.app.githubApp.remote.retrofit.BaseApi
 object Injection {
     fun provideRepo(context: Context): GitUserRepository {
         val apiService = BaseApi.getApiService()
+        val pref = SettingPreference.getInstance(context.dataStore)
         val db = GitUsersDatabase.getInstance(context)
         val dao = db.gitUserDao()
-        return GitUserRepository.getInstance(apiService, dao)
+        return GitUserRepository.getInstance(apiService, dao, pref)
     }
 }

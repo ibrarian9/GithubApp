@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,10 +18,21 @@ import com.app.githubApp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var bind : ActivityMainBinding
+    private lateinit var bind: ActivityMainBinding
     private val adapter = UsersAdapter()
     private val mainViewModel by viewModels<MainViewModel> {
         ViewModelFactory.getInstance(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mainViewModel.getThemeSet().observe(this) {
+            if (it) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,14 +60,14 @@ class MainActivity : AppCompatActivity() {
             searchView.setupWithSearchBar(searchBar)
             searchView.editText.setOnEditorActionListener { _, _, _ ->
                 searchBar.setText(searchView.text)
-                mainViewModel.getAllUsers(searchView.text.toString()).observe(this@MainActivity){
+                mainViewModel.getAllUsers(searchView.text.toString()).observe(this@MainActivity) {
                     adapter.submitList(it)
                 }
                 searchView.hide()
                 false
             }
 
-            mainViewModel.getLoading().observe(this@MainActivity){
+            mainViewModel.getLoading().observe(this@MainActivity) {
                 showLoading(it)
             }
         }
