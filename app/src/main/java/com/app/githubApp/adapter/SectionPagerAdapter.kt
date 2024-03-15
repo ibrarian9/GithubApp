@@ -3,8 +3,8 @@ package com.app.githubApp.adapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.app.githubApp.detailFragment.FollowerFragment
-import com.app.githubApp.detailFragment.FollowingFragment
+import com.app.githubApp.ui.detailFragment.FollowerFragment
+import com.app.githubApp.ui.detailFragment.FollowingFragment
 
 class SectionPagerAdapter(activity: AppCompatActivity, private val dataNama: String?) : FragmentStateAdapter(activity) {
 

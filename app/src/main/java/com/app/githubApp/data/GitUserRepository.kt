@@ -1,32 +1,47 @@
-package com.app.githubApp
+package com.app.githubApp.data
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.app.githubApp.remote.database.GitUser
+import com.app.githubApp.remote.database.GitUserDao
 import com.app.githubApp.remote.response.FollResponseItem
 import com.app.githubApp.remote.response.GithubResponse
 import com.app.githubApp.remote.response.ProfileResponse
 import com.app.githubApp.remote.response.UsersItem
-import com.app.githubApp.remote.retrofit.BaseApi
+import com.app.githubApp.remote.retrofit.ApiService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
-class MainViewModel : ViewModel() {
+class GitUserRepository private constructor(
+    private val apiService: ApiService,
+    private val gitUserDao: GitUserDao
+) {
+
+    private val executorService: ExecutorService = Executors.newSingleThreadExecutor()
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    companion object {
-        private const val TAG = "MainViewModel"
+    fun getAllFavorite(): LiveData<List<GitUser>> = gitUserDao.getAllFavorite()
+
+    fun getFavUserByUsername(username: String): LiveData<GitUser> =
+        gitUserDao.getFavUserByUsername(username)
+    fun insertUsers(gitUser: GitUser) = executorService.execute {
+        gitUserDao.insertUsers(gitUser)
+    }
+    fun deleteUsers(gitUser: GitUser) = executorService.execute {
+        gitUserDao.deleteUsers(gitUser)
     }
 
     fun getListUsers(query: String): LiveData<List<UsersItem>> {
         _isLoading.value = true
 
         val listUsers = MutableLiveData<List<UsersItem>>()
-        val user = BaseApi.getApiService().getUsers(query)
+        val user = apiService.getUsers(query)
 
         user.enqueue(object : Callback<GithubResponse> {
             override fun onResponse(
@@ -53,7 +68,7 @@ class MainViewModel : ViewModel() {
         _isLoading.value = true
 
         val detailUser = MutableLiveData<ProfileResponse>()
-        val user = BaseApi.getApiService().getDetailUser(username)
+        val user = apiService.getDetailUser(username)
 
         user.enqueue(object : Callback<ProfileResponse> {
             override fun onResponse(
@@ -80,7 +95,7 @@ class MainViewModel : ViewModel() {
         _isLoading.value = true
 
         val followers = MutableLiveData<List<FollResponseItem>>()
-        val user = BaseApi.getApiService().getFollowerUser(username)
+        val user = apiService.getFollowerUser(username)
 
         user.enqueue(object : Callback<List<FollResponseItem>> {
             override fun onResponse(
@@ -104,7 +119,7 @@ class MainViewModel : ViewModel() {
         _isLoading.value = true
 
         val following = MutableLiveData<List<FollResponseItem>>()
-        val user = BaseApi.getApiService().getFollowingUser(username)
+        val user = apiService.getFollowingUser(username)
 
         user.enqueue(object : Callback<List<FollResponseItem>> {
             override fun onResponse(
@@ -122,5 +137,18 @@ class MainViewModel : ViewModel() {
             }
         })
         return following
+    }
+    companion object {
+        private const val TAG = "MainViewModel"
+
+        @Volatile
+        var INSTANCE: GitUserRepository? = null
+        fun getInstance(
+            apiService: ApiService,
+            gitUserDao: GitUserDao
+        ): GitUserRepository =
+            INSTANCE ?: synchronized(this) {
+                INSTANCE ?: GitUserRepository(apiService, gitUserDao)
+            }.also { INSTANCE = it }
     }
 }

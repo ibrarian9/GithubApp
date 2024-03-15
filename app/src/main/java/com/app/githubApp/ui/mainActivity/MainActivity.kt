@@ -1,5 +1,6 @@
-package com.app.githubApp
+package com.app.githubApp.ui.mainActivity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -7,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.app.githubApp.ui.darkModeActivity.DarkModeActivity
+import com.app.githubApp.ui.favoriteActivity.FavoriteActivity
+import com.app.githubApp.R
+import com.app.githubApp.ui.ViewModelFactory
 import com.app.githubApp.adapter.UsersAdapter
 import com.app.githubApp.databinding.ActivityMainBinding
 
@@ -14,7 +19,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var bind : ActivityMainBinding
     private val adapter = UsersAdapter()
-    private val mainViewModel: MainViewModel by viewModels()
+    private val mainViewModel by viewModels<MainViewModel> {
+        ViewModelFactory.getInstance(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,21 +33,29 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        bind.rv.layoutManager = LinearLayoutManager(this@MainActivity)
-        bind.rv.adapter = adapter
-
         with(bind) {
+            rv.layoutManager = LinearLayoutManager(this@MainActivity)
+            rv.adapter = adapter
+
+            fav.setOnClickListener {
+                startActivity(Intent(this@MainActivity, FavoriteActivity::class.java))
+            }
+
+            darkMode.setOnClickListener {
+                startActivity(Intent(this@MainActivity, DarkModeActivity::class.java))
+            }
+
             searchView.setupWithSearchBar(searchBar)
             searchView.editText.setOnEditorActionListener { _, _, _ ->
                 searchBar.setText(searchView.text)
-                mainViewModel.getListUsers(searchView.text.toString()).observe(this@MainActivity){
+                mainViewModel.getAllUsers(searchView.text.toString()).observe(this@MainActivity){
                     adapter.submitList(it)
                 }
                 searchView.hide()
                 false
             }
 
-            mainViewModel.isLoading.observe(this@MainActivity){
+            mainViewModel.getLoading().observe(this@MainActivity){
                 showLoading(it)
             }
         }

@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.app.githubApp.DetailActivity
+import com.app.githubApp.ui.detailActivity.DetailActivity
 import com.app.githubApp.databinding.ListUsersBinding
 import com.app.githubApp.remote.response.UsersItem
 import com.squareup.picasso.Picasso

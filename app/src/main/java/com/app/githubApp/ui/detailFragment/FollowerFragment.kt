@@ -1,4 +1,4 @@
-package com.app.githubApp.detailFragment
+package com.app.githubApp.ui.detailFragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,13 +7,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.app.githubApp.MainViewModel
+import com.app.githubApp.ui.ViewModelFactory
 import com.app.githubApp.adapter.FollowerAdapter
 import com.app.githubApp.databinding.FragmentFollowerBinding
+import com.app.githubApp.ui.detailActivity.DetailViewModel
 
 class FollowerFragment : Fragment() {
 
-    private val mainViewModel: MainViewModel by viewModels()
+    private val detailViewModel by viewModels<DetailViewModel> {
+        ViewModelFactory.getInstance(requireActivity())
+    }
     private val adapter = FollowerAdapter()
     private lateinit var bind: FragmentFollowerBinding
 
@@ -29,11 +32,11 @@ class FollowerFragment : Fragment() {
 
             val dataNama = arguments?.getString(NAMA)
 
-            mainViewModel.getFollower(dataNama!!).observe(viewLifecycleOwner){
+            detailViewModel.getFollower(dataNama!!).observe(viewLifecycleOwner){
                 adapter.submitList(it)
             }
 
-            mainViewModel.isLoading.observe(viewLifecycleOwner) {
+            detailViewModel.getLoading().observe(viewLifecycleOwner) {
                 showLoading(it)
             }
         }
